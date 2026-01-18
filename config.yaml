@@ -1,0 +1,16 @@
+hostname: "0.0.0.0"
+port: 8080
+
+servers:
+  trello:
+    command: bunx
+    args:
+      - -y
+      - "@delorenj/mcp-server-trello"
+
+  # Add Shopify and other MCPs here later
+  # shopify:
+  #   command: npx
+  #   args:
+  #     - -y
+  #     - "@shopify/mcp-server"

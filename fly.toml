@@ -1,0 +1,29 @@
+app = 'carterdea-mcp-gateway'
+primary_region = 'iad'
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'off'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '10s'
+    grace_period = '30s'
+    method = 'GET'
+    path = '/sse'
+
+[env]
+  PORT = "8080"
+  MCP_CONFIG = "/app/mcp-config.json"
+  MCP_LOG_LEVEL = "info"
+
+# Increase resources for 3 MCP servers (Trello, Harvest, Shopify)
+[[vm]]
+  memory = "1gb"
+  cpus = 1

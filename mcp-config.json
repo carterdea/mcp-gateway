@@ -1,0 +1,31 @@
+{
+  "servers": {
+    "trello": {
+      "enabled": true,
+      "command": "bunx",
+      "args": ["-y", "@delorenj/mcp-server-trello"],
+      "env": {
+        "TRELLO_API_KEY": "${TRELLO_API_KEY}",
+        "TRELLO_TOKEN": "${TRELLO_TOKEN}"
+      }
+    },
+    "harvest": {
+      "enabled": true,
+      "command": "bunx",
+      "args": ["-y", "@standardbeagle/harvest-mcp"],
+      "env": {
+        "HARVEST_ACCOUNT_ID": "${HARVEST_ACCOUNT_ID}",
+        "HARVEST_ACCESS_TOKEN": "${HARVEST_ACCESS_TOKEN}"
+      }
+    },
+    "shopify": {
+      "enabled": true,
+      "command": "bunx",
+      "args": ["-y", "@ajackus/shopify-mcp-server"],
+      "env": {
+        "SHOPIFY_SHOP_URL": "${SHOPIFY_SHOP_URL}",
+        "SHOPIFY_ADMIN_API_TOKEN": "${SHOPIFY_ADMIN_API_TOKEN}"
+      }
+    }
+  }
+}
