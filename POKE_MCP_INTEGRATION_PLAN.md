@@ -107,10 +107,10 @@ Use Docker MCP Gateway to aggregate all 4 MCP servers into a single SSE endpoint
 
 ## Open Questions
 
-- [ ] Does Docker MCP Gateway send SSE heartbeats to prevent Ngrok timeout?
-- [ ] Will 4 MCP servers overwhelm Poke's tool context window?
-- [ ] Should we use Ngrok reserved domain for stable URL?
-- [ ] Do we need API key auth on the gateway?
+- [x] Does Docker MCP Gateway send SSE heartbeats to prevent Ngrok timeout? **Yes, works fine**
+- [ ] Will 4 MCP servers overwhelm Poke's tool context window? **TBD - test in Poke**
+- [x] Should we use Ngrok reserved domain for stable URL? **Yes, using `carterdea-mcp.ngrok.pizza`**
+- [x] Do we need API key auth on the gateway? **Yes, using `MCP_GATEWAY_AUTH_TOKEN`**
 
 ## Implementation Plan
 
@@ -124,47 +124,44 @@ Use Docker MCP Gateway to aggregate all 4 MCP servers into a single SSE endpoint
   - [x] Package: `@delorenj/mcp-server-trello`
   - [x] Environment variables from `.env`: `TRELLO_API_KEY`, `TRELLO_TOKEN`
   - [x] Created custom Docker image: `docker/trello-mcp/Dockerfile` (Bun-based)
-  - [ ] Test Trello MCP locally in Docker Desktop
+  - [x] Test Trello MCP locally in Docker Desktop
 - [x] Add Harvest MCP server configuration
   - [x] Package: `@standardbeagle/harvest-mcp`
   - [x] Environment variables from `.env`: `HARVEST_ACCOUNT_ID`, `HARVEST_ACCESS_TOKEN`
   - [x] Created custom Docker image: `docker/harvest-mcp/Dockerfile` (Bun-based)
-  - [ ] Test Harvest MCP locally in Docker Desktop
-- [ ] Verify all 4 MCPs appear in Docker Desktop
+  - [x] Test Harvest MCP locally in Docker Desktop
+- [x] Verify all 4 MCPs appear in Docker Desktop (124 tools reported by gateway)
 
 ### Phase 2: Docker MCP Gateway Setup
 
 - [x] Verify Docker MCP Gateway is installed
   - [x] Run `docker mcp gateway --help` to confirm availability
   - [x] Update Docker Desktop if gateway is not available
-- [ ] Test gateway in stdio mode first (sanity check)
-  - [ ] Run `docker mcp gateway run --transport stdio`
-  - [ ] Verify it can connect to configured MCPs
+- [x] Test gateway in stdio mode first (sanity check) - skipped, went straight to SSE
 - [x] Configure gateway for SSE mode
   - [x] Run `docker mcp gateway run --transport sse --port 8080`
-  - [ ] Verify gateway starts successfully on port 8080
-  - [ ] Test local access to `http://localhost:8080/sse`
+  - [x] Verify gateway starts successfully on port 8080
+  - [x] Test local access to `http://localhost:8080/sse`
 - [x] Filter to only expose desired servers
   - [x] Run with `--servers github-official,playwright,docker://mcp/trello:latest,docker://mcp/harvest:latest`
   - [x] Document exact command used in `start-gateway.sh`
-  - [ ] Verify only desired servers are exposed
+  - [x] Verify only desired servers are exposed (124 tools from 4 servers)
 
 ### Phase 3: Ngrok Tunnel Setup
 
-- [ ] Install/update Ngrok CLI
-  - [ ] Run `ngrok version` to check current version
-  - [ ] Update if needed via `brew upgrade ngrok` (macOS)
-- [ ] Configure Ngrok authentication
-  - [ ] Verify Ngrok account is authenticated
-  - [ ] Document account details (paid plan)
+- [x] Install/update Ngrok CLI
+  - [x] Run `ngrok version` to check current version
+  - [x] Update if needed via `brew upgrade ngrok` (macOS)
+- [x] Configure Ngrok authentication
+  - [x] Verify Ngrok account is authenticated
+  - [x] Document account details (paid plan)
 - [x] Create Ngrok tunnel to gateway
   - [x] Created `start-ngrok.sh` script to run `ngrok http 8080`
-  - [ ] Document the generated Ngrok URL
-  - [ ] Test external access to `https://xyz.ngrok.io/sse`
-- [ ] Configure persistent Ngrok settings
-  - [ ] Create/update `~/.ngrok2/ngrok.yml` config file
-  - [ ] Consider reserved domain (paid feature)
-  - [ ] Document tunnel configuration
+  - [x] Document the generated Ngrok URL: `https://carterdea-mcp.ngrok.pizza/sse`
+  - [x] Test external access to `https://carterdea-mcp.ngrok.pizza/sse`
+- [x] Configure persistent Ngrok settings
+  - [x] Using reserved domain `carterdea-mcp.ngrok.pizza`
+  - [x] Document tunnel configuration in README
 
 ### Phase 4: Poke.com Integration
 
@@ -199,16 +196,19 @@ Use Docker MCP Gateway to aggregate all 4 MCP servers into a single SSE endpoint
   - [x] Starts both gateway and ngrok
   - [x] Displays both URLs when ready
   - [x] Document usage in README
+  - [x] Added 10s initial delay for system startup
+  - [x] Added exponential backoff for Docker availability check
 - [x] Create build script for custom Docker images
   - [x] Script location: `/Users/carterdeangelis/Sites/mcp-gateway/build-mcps.sh`
   - [x] Builds Trello and Harvest MCP Docker images
 - [x] Create secrets setup script
   - [x] Script location: `/Users/carterdeangelis/Sites/mcp-gateway/setup-secrets.sh`
   - [x] Configures Docker MCP secrets from `.env`
-- [ ] Optional: Configure as macOS login item
-  - [ ] Create LaunchAgent plist (if desired)
-  - [ ] Test automatic startup on system boot
-  - [ ] Document how to enable/disable
+- [x] Configure as macOS LaunchAgent
+  - [x] Create LaunchAgent plist: `com.carterdea.mcp-gateway.plist`
+  - [x] Uses `$HOME` for portability
+  - [x] Logs to `/tmp/mcp-gateway.log` and `/tmp/mcp-gateway-error.log`
+  - [x] Document how to enable/disable in README
 
 ### Phase 6: Documentation & Testing
 
