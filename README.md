@@ -119,7 +119,34 @@ This opens a tunnel at `https://carterdea-mcp.ngrok.pizza`
 ### 5. Connect Poke.com
 
 1. Go to https://poke.com/settings/connections/integrations/new
-2. Create MCP integration with URL: `https://carterdea-mcp.ngrok.pizza/sse`
+2. Create MCP integration with:
+   - **URL**: `https://carterdea-mcp.ngrok.pizza/sse`
+   - **Auth Header**: `Authorization: Bearer YOUR_MCP_GATEWAY_AUTH_TOKEN`
+
+### 6. Auto-start on Boot (Optional)
+
+To have the gateway start automatically when the Mac mini boots:
+
+```bash
+# Copy LaunchAgent to system location
+cp com.carterdea.mcp-gateway.plist ~/Library/LaunchAgents/
+
+# Load the agent (starts immediately)
+launchctl load ~/Library/LaunchAgents/com.carterdea.mcp-gateway.plist
+```
+
+To stop and disable:
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.carterdea.mcp-gateway.plist
+```
+
+View logs:
+
+```bash
+tail -f /tmp/mcp-gateway.log
+tail -f /tmp/mcp-gateway-error.log
+```
 
 ---
 
