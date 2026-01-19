@@ -78,6 +78,9 @@ TRELLO_API_KEY=your_api_key
 TRELLO_TOKEN=your_token
 HARVEST_ACCOUNT_ID=your_account_id
 HARVEST_ACCESS_TOKEN=your_access_token
+
+# Gateway auth token (generate with: openssl rand -hex 32)
+MCP_GATEWAY_AUTH_TOKEN=your_secure_token
 ```
 
 Then run:
