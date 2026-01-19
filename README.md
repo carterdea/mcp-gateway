@@ -1,44 +1,134 @@
 # MCP Gateway
 
-Model Context Protocol (MCP) gateway deployed on Fly.io using mcp-aggregator and Supergateway to expose multiple stdio-based MCP servers via a single SSE endpoint for use with Poke.com and other MCP clients.
+Model Context Protocol (MCP) gateway to expose multiple MCP servers via SSE for Poke.com.
 
-## Overview
+## Deployment Options
 
-This gateway aggregates multiple local MCP servers (stdio transport) and exposes them to remote clients via a single SSE endpoint. This enables AI assistants like Poke to interact with various services and tools through a unified interface.
+### Option A: Docker Desktop + Ngrok (Local Server)
 
-## Current Deployment
-
-- **MCP Servers**: 3 aggregated servers
-  - Trello (`@delorenj/mcp-server-trello`)
-  - Harvest (`@standardbeagle/harvest-mcp`)
-  - Shopify (`@ajackus/shopify-mcp-server`)
-- **Aggregator**: [mcp-aggregator](https://github.com/dwillitzer/mcp-aggregator) (combines multiple MCP servers into single stdio stream)
-- **Gateway**: [Supergateway](https://github.com/hannesrudolph/supergateway) (stdio to SSE adapter)
-- **Runtime**: Bun
-- **Platform**: Fly.io (iad region)
-- **Resources**: 1GB RAM, 1 shared vCPU
-
-### SSE Endpoint
+Run on your Mac mini with Docker MCP Gateway and expose via Ngrok.
 
 ```
-https://carterdea-mcp-gateway.fly.dev/sse
+Poke.com → Ngrok → localhost:8080 → Docker MCP Gateway → MCP Servers
+                                                          ├── GitHub (catalog)
+                                                          ├── Playwright (catalog)
+                                                          ├── Trello (custom Docker)
+                                                          └── Harvest (custom Docker)
 ```
 
-Use this URL in Poke.com's MCP integration settings to access all 3 MCP servers.
+**Quick Start:**
+```bash
+cd ~/Sites/mcp-gateway
+./build-mcps.sh        # Build custom Docker images (first time)
+./setup-secrets.sh     # Configure API keys
+./start-all.sh         # Start gateway + ngrok
+```
 
-## Architecture
+**Ngrok URL:**
+```
+https://carterdea-mcp.ngrok.pizza/sse
+```
+
+See [Local Setup](#local-setup-docker-desktop) below.
+
+### Option B: Fly.io (Cloud)
+
+Deployed on Fly.io using mcp-aggregator and Supergateway.
 
 ```
 Poke.com (MCP Client)
     ↓ SSE
 Supergateway (stdio → SSE adapter)
     ↓ stdio
-mcp-aggregator (combines 3 MCPs)
+mcp-aggregator (combines MCPs)
     ↓ ↓ ↓
     Trello | Harvest | Shopify
         ↓      ↓        ↓
     REST APIs (external services)
 ```
+
+**SSE Endpoint:**
+```
+https://carterdea-mcp-gateway.fly.dev/sse
+```
+
+---
+
+## Local Setup (Docker Desktop)
+
+### Prerequisites
+- Docker Desktop with MCP Toolkit
+- Ngrok CLI (authenticated)
+
+### 1. Build custom MCP images
+
+```bash
+./build-mcps.sh
+```
+
+This builds Docker images for MCPs not in Docker's catalog:
+- `mcp/trello:latest` - Trello board/card management
+- `mcp/harvest:latest` - Harvest time tracking
+
+### 2. Configure secrets
+
+Create `.env` with your API credentials:
+```bash
+TRELLO_API_KEY=your_api_key
+TRELLO_TOKEN=your_token
+HARVEST_ACCOUNT_ID=your_account_id
+HARVEST_ACCESS_TOKEN=your_access_token
+```
+
+Then run:
+```bash
+./setup-secrets.sh
+```
+
+Or manually:
+```bash
+docker mcp secret set trello.api_key
+docker mcp secret set trello.token
+docker mcp secret set harvest.account_id
+docker mcp secret set harvest.access_token
+```
+
+### 3. Start gateway
+
+```bash
+./start-gateway.sh
+```
+
+This runs Docker MCP Gateway aggregating:
+- `github-official` (from Docker catalog)
+- `playwright` (from Docker catalog)
+- `docker://mcp/trello:latest` (custom image)
+- `docker://mcp/harvest:latest` (custom image)
+
+### 4. Start Ngrok (separate terminal)
+
+```bash
+./start-ngrok.sh
+```
+
+This opens a tunnel at `https://carterdea-mcp.ngrok.pizza`
+
+### 5. Connect Poke.com
+
+1. Go to https://poke.com/settings/connections/integrations/new
+2. Create MCP integration with URL: `https://carterdea-mcp.ngrok.pizza/sse`
+
+---
+
+## Fly.io Deployment
+
+### Current Configuration
+- **MCP Servers**: Trello, Harvest, Shopify
+- **Aggregator**: mcp-aggregator
+- **Gateway**: Supergateway
+- **Runtime**: Bun
+- **Platform**: Fly.io (iad region)
+- **Resources**: 1GB RAM, 1 shared vCPU
 
 ## Prerequisites
 
