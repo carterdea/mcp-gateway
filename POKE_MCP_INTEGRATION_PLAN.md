@@ -204,10 +204,9 @@ Use Docker MCP Gateway to aggregate all 4 MCP servers into a single SSE endpoint
 - [x] Create secrets setup script
   - [x] Script location: `/Users/carterdeangelis/Sites/mcp-gateway/setup-secrets.sh`
   - [x] Configures Docker MCP secrets from `.env`
-- [x] Configure as macOS LaunchAgent
+- [x] Optional: Configure as macOS login item
   - [x] Create LaunchAgent plist: `com.carterdea.mcp-gateway.plist`
-  - [x] Uses `$HOME` for portability
-  - [x] Logs to `/tmp/mcp-gateway.log` and `/tmp/mcp-gateway-error.log`
+  - [x] Test automatic startup on system boot
   - [x] Document how to enable/disable in README
 
 ### Phase 6: Documentation & Testing
