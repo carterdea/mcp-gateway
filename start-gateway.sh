@@ -16,16 +16,18 @@ if ! docker images --format '{{.Repository}}' | grep -q "^mcp/trello$"; then
     exit 1
 fi
 
+# Get list of enabled servers
+ENABLED_SERVERS=$(docker mcp server ls 2>/dev/null | tail -n +4 | awk '{print $1}' | tr '\n' ',' | sed 's/,$//')
+
 echo "Starting Docker MCP Gateway on port 8080..."
-echo "Servers: github-official, playwright, trello, harvest"
+echo "Enabled MCP Toolkit servers: $ENABLED_SERVERS"
+echo "Custom Docker images: trello, harvest"
 echo ""
 
-# Run gateway with both catalog and custom servers
-# Note: Custom images need environment variables passed
+# Run gateway with all enabled servers + custom Docker images
 docker mcp gateway run \
     --transport sse \
     --port 8080 \
-    --servers github-official,playwright,docker://mcp/trello:latest,docker://mcp/harvest:latest
-
-# If the above doesn't work with custom images, try this alternative:
-# docker mcp gateway run --transport sse --port 8080 --servers github-official,playwright
+    --enable-all-servers \
+    --oci-ref docker://mcp/trello:latest \
+    --oci-ref docker://mcp/harvest:latest

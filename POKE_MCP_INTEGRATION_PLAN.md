@@ -196,6 +196,8 @@ Use Docker MCP Gateway to aggregate all 4 MCP servers into a single SSE endpoint
   - [x] Starts both gateway and ngrok
   - [x] Displays both URLs when ready
   - [x] Document usage in README
+  - [x] Added 10s initial delay for system startup
+  - [x] Added exponential backoff for Docker availability check
 - [x] Create build script for custom Docker images
   - [x] Script location: `/Users/carterdeangelis/Sites/mcp-gateway/build-mcps.sh`
   - [x] Builds Trello and Harvest MCP Docker images

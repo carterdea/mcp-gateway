@@ -7,6 +7,9 @@ servers:
     args:
       - -y
       - "@delorenj/mcp-server-trello"
+    env:
+      TRELLO_API_KEY: "${TRELLO_API_KEY}"
+      TRELLO_TOKEN: "${TRELLO_TOKEN}"
 
   # Add Shopify and other MCPs here later
   # shopify:

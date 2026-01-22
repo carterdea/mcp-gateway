@@ -136,11 +136,13 @@ launchctl load ~/Library/LaunchAgents/com.carterdea.mcp-gateway.plist
 ```
 
 To stop and disable:
+
 ```bash
 launchctl unload ~/Library/LaunchAgents/com.carterdea.mcp-gateway.plist
 ```
 
 View logs:
+
 ```bash
 tail -f /tmp/mcp-gateway.log
 tail -f /tmp/mcp-gateway-error.log
